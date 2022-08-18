@@ -11,6 +11,8 @@ import javax.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,14 +29,14 @@ public class CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    @Transactional(readOnly = true) //transação com banco de dados e readOlny nao trava o banco de dados para
-    // operaçãos de apenas de leitura
-    public List<CategoryDTO> findAll() {
-        List<Category> list = categoryRepository.findAll();
-        List<CategoryDTO> listDTO =  list.stream().map(x -> new CategoryDTO(x)).collect(Collectors.toList());
-
-        return listDTO;
-    }
+//    @Transactional(readOnly = true) //transação com banco de dados e readOlny nao trava o banco de dados para
+//    // operaçãos de apenas de leitura
+//    public List<CategoryDTO> findAll() {
+//        List<Category> list = categoryRepository.findAll();
+//        List<CategoryDTO> listDTO =  list.stream().map(x -> new CategoryDTO(x)).collect(Collectors.toList());
+//
+//        return listDTO;
+//    }
 
     @Transactional(readOnly = true)
     public CategoryDTO findById(Long id) {
@@ -75,6 +77,15 @@ public class CategoryService {
 			throw new DataBaseException("Integrity violation");
 		}
 	}
+
+  @Transactional(readOnly = true) 
+  public Page<CategoryDTO> findAllPages(PageRequest pageRequest) {
+      Page<Category> list = categoryRepository.findAll(pageRequest);
+      Page<CategoryDTO> listDTO =  list.map(x -> new CategoryDTO(x));
+
+      return listDTO;
+  }
+	
 
 
 }
